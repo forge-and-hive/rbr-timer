@@ -3,6 +3,7 @@ import { FormEvent, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { register } from "@/actions/register";
+import { signIn } from "next-auth/react";
 
 export default function Register() {
   const [error, setError] = useState<string>();
@@ -10,17 +11,33 @@ export default function Register() {
   const ref = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (formData: FormData) => {
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const name = formData.get("name") as string;
+
     const r = await register({
-      email: formData.get("email"),
-      password: formData.get("password"),
-      name: formData.get("name"),
+      email,
+      password,
+      name,
     });
     ref.current?.reset();
     if (r?.error) {
       setError(r.error);
       return;
     } else {
-      return router.push("/login");
+      // Sign in the user after successful registration
+      const signInResult = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (signInResult?.error) {
+        setError(signInResult.error);
+        return;
+      }
+
+      return router.push("/");
     }
   };
 
@@ -29,7 +46,7 @@ export default function Register() {
       <form
         ref={ref}
         action={handleSubmit}
-        className="p-6 w-full max-w-[400px] flex flex-col justify-between items-center gap-2 
+        className="p-6 w-full max-w-[400px] flex flex-col justify-between items-center gap-2
             border border-solid border-black bg-white rounded text-black"
       >
         {error && <div className="">{error}</div>}

@@ -22,7 +22,10 @@ export const register = async (values: any) => {
       });
       await user.save();
 
+      return { success: true };
+
   }catch(e){
       console.log(e);
+      return { error: 'An error occurred during registration' };
   }
 }
