@@ -86,7 +86,7 @@ export function RegisterForm() {
         />
       </div>
 
-      <Button type="submit" className="w-full">
+      <Button type="submit" className="w-full mt-6">
         Sign up
       </Button>
 
