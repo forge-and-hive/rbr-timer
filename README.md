@@ -1,5 +1,7 @@
 # Next.js MongoDB Starter
 
+## Start on local
+
 A starter kit with Next.js, MongoDB, Mongoose, NextAuth.js, Tailwind CSS and Shadcn UI.
 
 ## Environment Setup
@@ -16,8 +18,18 @@ pnpm install
 ```
 
 3. Create a `.env` file in the root directory with the following variables:
+
+To generate a secure random string for NEXTAUTH_SECRET, run:
+```bash
+openssl rand -base64 32
+```
+
+Then add it to the `.env` file
+
 ```env
 MONGODB_URI=mongodb://127.0.0.1:27017/starter
+NEXTAUTH_SECRET=your-secret-key-here # Generate a secure random string
+NEXTAUTH_URL=http://localhost:3000
 ```
 
 4. Start the development server
@@ -26,3 +38,21 @@ pnpm dev
 ```
 
 The application will be available at [http://localhost:3000](http://localhost:3000)
+
+## Git setup
+
+After clone do
+
+```
+git reset $(git commit-tree HEAD^{tree} -m "A new start")
+```
+
+To get a new history, then point to the correct package
+
+```
+git remote set-url origin [Git repo]
+```
+
+Update the package.json file with the new name of you module and its repo
+
+Then remove this part and write the docs of your package
