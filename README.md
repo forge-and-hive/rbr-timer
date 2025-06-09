@@ -19,7 +19,7 @@ pnpm install
 
 3. Create a `.env` file in the root directory with the following variables:
 
-To generate a secure random string for NEXTAUTH_SECRET, run:
+To generate a secure random string for AUTH_SECRET, run:
 ```bash
 openssl rand -base64 32
 ```
@@ -28,8 +28,9 @@ Then add it to the `.env` file
 
 ```env
 MONGODB_URI=mongodb://127.0.0.1:27017/starter
-NEXTAUTH_SECRET=your-secret-key-here # Generate a secure random string
+AUTH_SECRET=your-secret-key-here # Generate a secure random string
 NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_COOKIE_PREFIX=myapp # Unique prefix for cookies to avoid collisions with other apps
 ```
 
 4. Start the development server

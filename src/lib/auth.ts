@@ -1,10 +1,32 @@
-import { connectDB } from "@/lib/mongodb";
-import User from "@/models/User";
+import { User } from "@/models";
 import type { NextAuthOptions } from "next-auth";
 import credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
-export const authOptions: NextAuthOptions = {
+const COOKIE_PREFIX = process.env.NEXTAUTH_COOKIE_PREFIX || 'app';
+
+// Extend the next-auth types for better type safety
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    }
+  }
+  interface User {
+    id: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string;
+  }
+}
+
+export const authOptions: NextAuthOptions  = {
   providers: [
     credentials({
       name: "Credentials",
@@ -14,19 +36,20 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        await connectDB();
         const user = await User.findOne({
           email: credentials?.email,
         }).select("+password");
 
-        if (!user) throw new Error("Wrong Email");
-
+        // Use this message for security reasons
+        // Don't want to expose the user is not found
+        if (!user) throw new Error("Wrong Email/Password");
         const passwordMatch = await bcrypt.compare(
           credentials!.password,
           user.password
         );
 
-        if (!passwordMatch) throw new Error("Wrong Password");
+        if (!passwordMatch) throw new Error("Wrong Email/Password");
+
         return user;
       },
     }),
@@ -34,4 +57,50 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  secret: process.env.AUTH_SECRET,
+  pages: {
+    signIn: "/login",
+  },
+  cookies: {
+    sessionToken: {
+      name: `${COOKIE_PREFIX}.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    },
+    callbackUrl: {
+      name: `${COOKIE_PREFIX}.callback-url`,
+      options: {
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    },
+    csrfToken: {
+      name: `${COOKIE_PREFIX}.csrf-token`,
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production'
+      }
+    }
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+      }
+      return session;
+    }
+  }
 };
