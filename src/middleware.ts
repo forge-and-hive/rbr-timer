@@ -3,8 +3,14 @@ import { getToken } from "next-auth/jwt";
 import { NextRequestWithAuth } from "next-auth/middleware";
 
 export default async function middleware(request: NextRequestWithAuth) {
-  const token = await getToken({ req: request });
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+    cookieName: `${process.env.NEXTAUTH_COOKIE_PREFIX || 'app'}.session-token`
+  });
   const isAuthenticated = !!token;
+
+  console.log("isAuthenticated", isAuthenticated);
 
   // Auth pages that should redirect to dashboard if user is logged in
   if (isAuthenticated && ["/login", "/register"].includes(request.nextUrl.pathname)) {
