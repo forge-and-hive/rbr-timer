@@ -14,12 +14,10 @@ Record audio from microfone
 - On start timer, start recording
 - On stop display the record
 
-Pitch model
+Pitch model and audio upload
 - Create pitch model
-
-Upload audio to pitch model
 - Send audio from frontend to back using actions and formData
-- Upload to S3
+- Upload to S3(use aws sdk 3)
 - Create pitch list client component
 
 Forge simple task
@@ -27,9 +25,11 @@ Forge simple task
 
 Transcript task
 - Using deepgram, create a task to transcribe the audio
+https://developers.deepgram.com/reference/speech-to-text-api/listen
 
 Extract data and summary
 - Using openAi create a task to generate the summary of the transcript, extract RbRer and technologies
+https://platform.openai.com/docs/api-reference/completions
 
 Public page for event
 - Create public page to list all the pitches
