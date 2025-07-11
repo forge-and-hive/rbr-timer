@@ -1,0 +1,18 @@
+{
+  "project": {
+    "name": "RbRTimer"
+  },
+  "paths": {
+    "logs": "logs/",
+    "fixtures": "fixtures/",
+    "tasks": "src/tasks/",
+    "runners": "src/runners/",
+    "tests": "src/tests/"
+  },
+  "infra": {
+    "region": "us-west-2",
+    "bucket": ""
+  },
+  "tasks": {},
+  "runners": {}
+}
